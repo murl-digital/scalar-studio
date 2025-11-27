@@ -12,7 +12,7 @@
     <div class="b-b-solid b-b-1 row-span-1 flex flex-row-reverse">
         <DropdownMenu.Root>
             <DropdownMenu.Trigger
-                class="flex h-16 w-16 items-center justify-center rounded-full hover:rounded-3xl transition-all"
+                class="flex h-16 w-16 items-center justify-center rounded-full overflow-clip hover:rounded-3xl transition-all"
             >
                 <Avatar.Root>
                     <Avatar.Image src={data.avatarUrl ?? ""} />
