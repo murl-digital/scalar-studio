@@ -44,7 +44,7 @@
 
 <Label {field}>
     {#if field.field_type.type === "struct"}
-        <div class="border p-2">
+        <div class="border p-1">
             {#each field.field_type.fields as iField}
                 <Field
                     field={iField}

@@ -28,7 +28,11 @@
         if (untrack(() => ready)) {
             timeout = setTimeout(() => {
                 create(init).then((id) =>
-                    goto(`./${id}/edit`, { invalidateAll: true }),
+                    goto(`./${id}/edit`, {
+                        invalidateAll: true,
+                        keepFocus: true,
+                        noScroll: true,
+                    }),
                 );
             }, 500);
         }

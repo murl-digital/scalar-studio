@@ -51,7 +51,7 @@
         }
     });
 
-    let uploadProgress = $state(0);
+    let uploadProgress: number | null = $state(null);
     let tab: "upload" | "select" = $state("upload");
     let open = $state(false);
 
@@ -70,6 +70,7 @@
             xhr.onloadend = () => {
                 resolve(xhr.readyState === 4 && xhr.status === 200);
                 data["url"] = xhr.responseText;
+                uploadProgress = null;
             };
             xhr.setRequestHeader("Content-Type", "application/octet-stream");
             xhr.send(f);
@@ -106,9 +107,17 @@
                             min-w-min -translate-x-1/2 -translate-y-1/2 p-8 bg-dark text-gray border-1 rounded-xs shadow-lg shadow-black transition-all"
                 >
                     <Tabs.Root bind:value={tab}>
-                        <Tabs.List>
-                            <Tabs.Trigger value="upload">Upload</Tabs.Trigger>
-                            <Tabs.Trigger value="select">
+                        <Tabs.List class="flex ">
+                            <Tabs.Trigger
+                                value="upload"
+                                class="input-button basis-1/2 grow"
+                            >
+                                Upload
+                            </Tabs.Trigger>
+                            <Tabs.Trigger
+                                value="select"
+                                class="input-button basis-1/2 grow"
+                            >
                                 Select Existing
                             </Tabs.Trigger>
                         </Tabs.List>
@@ -119,7 +128,9 @@
                                     uploadFile(e.detail.files.accepted[0])}
                                 class="input-base w-sm h-16"
                             ></div>
-                            <progress value={uploadProgress}> </progress>
+                            {#if uploadProgress}
+                                <progress value={uploadProgress}> </progress>
+                            {/if}
                         </Tabs.Content>
                         <Tabs.Content
                             value="select"
@@ -141,6 +152,10 @@
                                             <img src={url} />
                                         </button>
                                     {/each}
+                                </div>
+                            {:catch err}
+                                <div>
+                                    {err}
                                 </div>
                             {/await}
                         </Tabs.Content>

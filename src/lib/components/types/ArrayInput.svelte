@@ -6,6 +6,8 @@
     import { flip } from "svelte/animate";
     import { SortableItem } from "svelte-sortable-items";
     import Label from "../Label.svelte";
+    import { fade } from "svelte/transition";
+    import Dyn from "../Dyn.svelte";
 
     let {
         field,
@@ -53,35 +55,28 @@
 <Label {field}>
     <ol class="flex flex-col gap-2">
         {#each internalArray as elem, i (elem.id)}
-            <li animate:flip>
+            <li animate:flip={{ duration: 125 }}>
                 <SortableItem
                     propItemNumber={i}
                     bind:propHoveredItemNumber={currentHovered}
                     bind:propData={internalArray}
                     class={[
-                        "flex items-center border-base transition-all p-2",
+                        "flex items-center border-base p-2 gap-1",
                         i == currentHovered && "border-active",
                     ]}
                 >
                     <div
                         class="i-ph-dots-six-vertical-bold hover:cursor-grab"
                     ></div>
-                    {#await meta}
-                        <div class="i-svg-spinners-90-ring"></div>
-                    {:then meta}
-                        {#if meta}
+                    <Dyn {meta} field={of}>
+                        {#snippet resolved(meta)}
                             <meta.component
                                 field={of}
                                 bind:data={internalArray[i].v}
                                 ready={() => {}}
                             />
-                        {:else}
-                            <div>
-                                !! WARNING !! component for {field.field_type
-                                    .type} not found
-                            </div>
-                        {/if}
-                    {/await}
+                        {/snippet}
+                    </Dyn>
                     <button
                         class="input-button"
                         onclick={() => internalArray.splice(i, 1)}
@@ -92,7 +87,7 @@
         {/each}
     </ol>
     <button
-        class="input-button"
+        class="input-button w-fit"
         onclick={() =>
             internalArray.push({
                 id:

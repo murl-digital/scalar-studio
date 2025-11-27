@@ -8,6 +8,8 @@
 </script>
 
 <Label.Root class="flex flex-col gap-2">
-    <span>{field?.title}</span>
+    {#if field?.title}
+        <span>{field?.title}</span>
+    {/if}
     {@render children()}
 </Label.Root>

@@ -16,7 +16,7 @@
 
 <Label {field}>
     <input
-        class="input-base"
+        class="input-base p-1"
         step="0.1"
         id={field.name}
         type="number"

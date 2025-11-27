@@ -17,6 +17,6 @@
 </script>
 
 <Label {field}>
-    <textarea class="input-base p-2" id={field.name} bind:value={data}
+    <textarea class="input-base p-1" id={field.name} bind:value={data}
     ></textarea>
 </Label>
