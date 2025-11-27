@@ -4,6 +4,7 @@
     import Field from "$lib/components/Field.svelte";
     import { onMount } from "svelte";
     import Label from "../Label.svelte";
+    import { Combobox } from "bits-ui";
 
     let {
         field,
@@ -56,17 +57,41 @@
     onMount(() => {
         ready();
     });
+
+    let open = $state(false);
+    $inspect(data);
 </script>
 
 <Label {field}>
     {#if field.field_type.type === "enum"}
-        <select bind:value={data.type} class="input-base">
-            {#each field.field_type.variants as variant}
-                <option value={variant.variant_name}
-                    >{variant.variant_name}</option
-                >
-            {/each}
-        </select>
+        <Combobox.Root bind:value={data.type} bind:open type="single">
+            <div class="input-base flex items-center">
+                <Combobox.Input
+                    defaultValue={data.type}
+                    onfocus={() => (open = true)}
+                    class="w-full p-1 focus:ring-0 focus:outline-none"
+                ></Combobox.Input>
+                <Combobox.Trigger class="input-button w-6 h-6 p-1 z-20">
+                    <div class="i-ph-caret-down"></div>
+                </Combobox.Trigger>
+
+                <Combobox.Portal>
+                    <Combobox.Content
+                        class="flex gap-1 bg-dark border rounded-sm shadow-md"
+                        align="start"
+                    >
+                        {#each field.field_type.variants as variant}
+                            <Combobox.Item
+                                class="select-none input-button data-[highlighted]:border-active"
+                                value={variant.variant_name}
+                            >
+                                {variant.variant_name}
+                            </Combobox.Item>
+                        {/each}
+                    </Combobox.Content>
+                </Combobox.Portal>
+            </div>
+        </Combobox.Root>
     {/if}
 
     {#if struct_fields}
