@@ -22,7 +22,7 @@
         "filedrop-svelte": "^0.1.2",
         "isomorphic-dompurify": "^2.32.0",
         "nanoid": "^5.1.6",
-        "scalar-types": "^0.0.2",
+        "scalar-types": "^0.0.4",
         "svelte": "^5.43.9",
         "svelte-awesome-color-picker": "^4.1.0",
         "svelte-check": "^4.3.4",
@@ -629,7 +629,7 @@
 
     "saxes": ["saxes@6.0.0", "", { "dependencies": { "xmlchars": "^2.2.0" } }, "sha512-xAg7SOnEhrm5zI3puOOKyy1OMcMlIJZYNJY7xLBwSze0UjhPLnWfj2GF2EpT0jmzaJKIWKHLsaSSajf35bcYnA=="],
 
-    "scalar-types": ["scalar-types@0.0.2", "", { "dependencies": { "typescript": "^5" } }, "sha512-tsLznvDgfelE+u2nf7e7DQx9b1zhjxTjlrb9Xk3flwO0ZeGwXh4mqOiGsbMx5RsnvYmANBgjbkZjQSCE+rt3vQ=="],
+    "scalar-types": ["scalar-types@0.0.4", "", { "dependencies": { "typescript": "^5" } }, "sha512-wNXf/vZCJvcSZxY2XXXW2WEd8pDNdOMa4lhv0W5VU1DcqY5F0HB4IJ6MLh1Qp6xsIXwf/qXGRgHSrtjaofVWcw=="],
 
     "set-cookie-parser": ["set-cookie-parser@2.7.1", "", {}, "sha512-IOc8uWeOZgnb3ptbCURJWNjWUPcO3ZnTTdzsurqERrP6nPyv+paC55vJM0LpOlT2ne+Ix+9+CRG1MNLlyZ4GjQ=="],
 

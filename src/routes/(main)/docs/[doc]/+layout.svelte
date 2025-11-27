@@ -1,32 +1,44 @@
 <script lang="ts">
-    import type { PageData } from "./$types";
     import { page } from "$app/state";
+    import { goto } from "$app/navigation";
 
     const { data, children } = $props();
+
+    $effect(() => {
+        if (data.schema.singleton) {
+            if (data.docs.length == 0) {
+                goto(`/docs/${page.params.doc}/create`);
+            } else if (!page.params.doc_id) {
+                goto(`/docs/${page.params.doc}/${data.docs[0].__sc_id}/edit`);
+            }
+        }
+    });
 </script>
 
 <div class="flex flex-row h-full w-full">
-    <div class="b-r-solid b-r-1 p-3 pr-6 h-full">
-        <ul class="flex flex-col pl-0 my-0">
-            {#each data.docs as doc, index}
-                {@const name = doc.content[Object.keys(doc.content)[0]]}
+    {#if !data.schema.singleton}
+        <div class="b-r-solid b-r-1 p-3 pr-6 h-full">
+            <ul class="flex flex-col pl-0 my-0">
+                {#each data.docs as doc, index}
+                    {@const name = doc.content[Object.keys(doc.content)[0]]}
+                    <a
+                        class="text-gray no-underline flex flex-row items-center gap-2"
+                        href="/docs/{page.params.doc}/{doc.__sc_id}/edit"
+                        ><div class="i-ph-file-text"></div>
+                        {name}
+                        {index}</a
+                    >
+                {/each}
                 <a
                     class="text-gray no-underline flex flex-row items-center gap-2"
-                    href="/docs/{page.params.doc}/{doc.__sc_id}/edit"
-                    ><div class="i-ph-file-text"></div>
-                    {name}
-                    {index}</a
+                    href="/docs/{page.params.doc}/create"
                 >
-            {/each}
-            <a
-                class="text-gray no-underline flex flex-row items-center gap-2"
-                href="/docs/{page.params.doc}/create"
-            >
-                <div class="i-ph-plus"></div>
-                Create New
-            </a>
-        </ul>
-    </div>
+                    <div class="i-ph-plus"></div>
+                    Create New
+                </a>
+            </ul>
+        </div>
+    {/if}
     <div class="h-full w-full">
         {@render children()}
     </div>

@@ -2,7 +2,7 @@ import { error } from "@sveltejs/kit";
 import type { LayoutLoad } from "./$types";
 import { apiFetch } from "$lib/api";
 import { base } from "$app/paths";
-import type { Schema } from "$ts/Schema";
+import type { Item, Schema } from "scalar-types";
 
 export const load: LayoutLoad = async ({ params, fetch }) => {
   let req = await apiFetch(fetch, `${base}/api/docs/${params.doc}`);
@@ -14,9 +14,7 @@ export const load: LayoutLoad = async ({ params, fetch }) => {
     throw error(404);
   }
 
-  let docs = await req.json();
-
-  console.log(docs);
+  let docs: Item[] = await req.json();
 
   return {
     schema,
