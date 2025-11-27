@@ -84,6 +84,14 @@ const components: Map<string, () => Promise<ComponentMeta>> = new Map([
     },
   ],
   [
+    "url",
+    async () => {
+      return {
+        component: (await import("./components/types/UrlInput.svelte")).default,
+      };
+    },
+  ],
+  [
     "markdown",
     async () => {
       return {
@@ -161,6 +169,7 @@ const components: Map<string, () => Promise<ComponentMeta>> = new Map([
 export async function getComponent(
   type: EditorType,
 ): Promise<ComponentMeta | null> {
+  console.debug(components);
   let create = components.get(type.component_key ?? type.type) ?? (() => null);
   console.debug("result", type, create);
   return (await create()) ?? null;
