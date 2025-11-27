@@ -146,6 +146,15 @@ const components: Map<string, () => Promise<ComponentMeta>> = new Map([
     },
   ],
   [
+    "cropped-image",
+    async () => {
+      return {
+        component: (await import("./components/types/ImageInput.svelte"))
+          .default,
+      };
+    },
+  ],
+  [
     "file",
     async () => {
       return {

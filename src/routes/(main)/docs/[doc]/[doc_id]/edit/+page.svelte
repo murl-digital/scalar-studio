@@ -62,9 +62,14 @@
                     if (response.ok) {
                         valid = true;
                     } else {
-                        response.json().then((json) => {
-                            valid = false;
-                            validationErrors = json;
+                        valid = false;
+                        response.text().then((json) => {
+                            try {
+                                validationErrors = JSON.parse(json);
+                            } catch {
+                                console.log("cant even parse data lmao");
+                                console.log(json);
+                            }
                         });
                     }
                 });
@@ -73,7 +78,6 @@
     });
 
     $inspect(formData);
-    $inspect(ready);
 </script>
 
 <div class="flex flex-col flex-initial w-full h-full">

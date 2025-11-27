@@ -1,10 +1,11 @@
 import type { LayoutLoad } from "./$types";
-import type { DocInfo } from "$ts/DocInfo";
+import type { DocInfo } from "scalar-types";
 import { apiFetch } from "$lib/api";
 import { state } from "$lib/state.svelte";
 import { base } from "$app/paths";
 
 export const ssr = false;
+export const prerender = false;
 
 const size = 80;
 

@@ -7,9 +7,12 @@
         $props();
 </script>
 
-<Label.Root class="flex flex-col gap-2">
+<div class="flex flex-col gap-2">
     {#if field?.title}
-        <span>{field?.title}</span>
+        <Label.Root>
+            <span>{field?.title}</span>
+        </Label.Root>
     {/if}
+
     {@render children()}
-</Label.Root>
+</div>

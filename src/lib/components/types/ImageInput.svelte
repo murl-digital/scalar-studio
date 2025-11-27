@@ -20,10 +20,13 @@
 
     if (
         field.field_type.type !== "struct" ||
-        field.field_type.component_key !== "image"
+        (field.field_type.component_key !== "image" &&
+            field.field_type.component_key !== "cropped-image")
     ) {
         error(500, "ImageInput was not given an image field");
     }
+
+    let isCropped = field.field_type.component_key === "cropped-image";
 
     let additionalData = field.field_type.fields.find(
         (elem) => elem.name === "additional_data",
@@ -77,12 +80,101 @@
         });
         console.log(success);
     }
+
+    let tempX = $state(data["gravity_x"] ?? 0);
+    let tempY = $state(data["gravity_y"] ?? 0);
+
+    let testX = $state(data["gravity_x"] ?? 0);
+    let testY = $state(data["gravity_y"] ?? 0);
+    let hotspotMouseDown = $state(false);
+
+    $effect(() => {
+        if (isCropped) {
+            data["gravity_x"] = testX;
+            data["gravity_y"] = testY;
+        }
+    });
 </script>
 
 <Label {field}>
     {#if data.url}
         <!-- svelte-ignore a11y_missing_attribute -->
-        <img src={data.url} />
+        <div class="flex items-start gap-2">
+            <img src={data.url} />
+            {#if isCropped}
+                <Dialog.Root>
+                    <Dialog.Trigger class="input-button w-8 h-8 ">
+                        <div class="i-ph-crop"></div>
+                    </Dialog.Trigger>
+                    <Dialog.Portal>
+                        <Dialog.Overlay
+                            class="fixed inset-0 z-50 backdrop-blur-xs backdrop-brightness-50"
+                        />
+                        <Dialog.Content
+                            class="fixed z-50 left-1/2 top-1/2 max-h-[85vh] max-w-[90vw] flex
+                                min-w-min -translate-x-1/2 -translate-y-1/2 p-8 bg-dark text-gray border-1 rounded-xs shadow-lg shadow-black transition-all"
+                        >
+                            <div class="flex flex-col justify-center">
+                                <Dialog.Title>Crop Image</Dialog.Title>
+
+                                <div class="relative">
+                                    <img src={data.url} />
+                                    <!-- svelte-ignore a11y_no_static_element_interactions -->
+                                    <div
+                                        class="absolute top-0 left-0 w-full h-full z-20"
+                                        onmousedown={() => {
+                                            hotspotMouseDown = true;
+                                            testX = tempX;
+                                            testY = tempY;
+                                        }}
+                                        onmouseup={() =>
+                                            (hotspotMouseDown = false)}
+                                        onmousemove={(e) => {
+                                            tempX = Math.min(
+                                                1,
+                                                Math.max(
+                                                    (e.clientX -
+                                                        e.currentTarget.getBoundingClientRect()
+                                                            .left) /
+                                                        e.currentTarget
+                                                            .clientWidth,
+                                                    0,
+                                                ),
+                                            );
+                                            tempY = Math.min(
+                                                1,
+                                                Math.max(
+                                                    (e.clientY -
+                                                        e.currentTarget.getBoundingClientRect()
+                                                            .top) /
+                                                        e.currentTarget
+                                                            .clientHeight,
+                                                    0,
+                                                ),
+                                            );
+                                            if (hotspotMouseDown) {
+                                                testX = tempX;
+                                                testY = tempY;
+                                            }
+                                        }}
+                                    >
+                                        <div
+                                            style:top={`${testY * 100}%`}
+                                            style:left={`${testX * 100}%`}
+                                            class="absolute w-4 h-4 shadow-md rounded-full bg-white -translate-x-1/2 -translate-y-1/2"
+                                        ></div>
+                                    </div>
+                                </div>
+
+                                <Dialog.Close class="input-button"
+                                    >Done</Dialog.Close
+                                >
+                            </div>
+                        </Dialog.Content>
+                    </Dialog.Portal>
+                </Dialog.Root>
+            {/if}
+        </div>
     {/if}
     <Dialog.Root bind:open>
         <div class="flex flex-row gap-2">
