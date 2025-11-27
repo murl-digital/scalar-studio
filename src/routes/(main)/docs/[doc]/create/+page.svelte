@@ -48,9 +48,9 @@
     $inspect(formData);
 </script>
 
-<div class="w-full h-full flex">
+<div class="w-full h-full flex justify-center">
     <div class="w-full overflow-scroll">
-        <div class="w-1/3 mx-auto py-16">
+        <div class="mx-auto py-16">
             <Form
                 fields={data.schema.fields}
                 errors={[]}

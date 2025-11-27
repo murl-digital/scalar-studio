@@ -77,8 +77,8 @@
 </script>
 
 <div class="flex flex-col flex-initial w-full h-full">
-    <div class="w-full flex-auto overflow-scroll py-8">
-        <div class="mx-auto w-1/3">
+    <div class="w-full flex-auto flex justify-center overflow-scroll py-8">
+        <div class="max-w-min">
             <Form
                 fields={data.schema.fields}
                 errors={validationErrors}
