@@ -44,7 +44,7 @@
     }
 
     if (additionalData.field_type.type === "null") {
-        data["additional_data"] = null;
+        data["additional_data"] = [];
         innerReady = true;
     }
 

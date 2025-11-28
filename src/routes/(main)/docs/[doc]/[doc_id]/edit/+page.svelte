@@ -1,6 +1,6 @@
 <script lang="ts">
     import { apiFetch } from "$lib/api";
-    import { untrack } from "svelte";
+    import { tick, untrack } from "svelte";
     import type { PageData } from "./$types";
     import { wait } from "$lib/utils";
     import { fly, slide } from "svelte/transition";
@@ -77,6 +77,18 @@
         }
     });
 
+    async function publish() {
+        await apiFetch(
+            fetch,
+            `${base}/api/docs/${page.params.doc}/${page.params.doc_id}/publish`,
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData),
+            },
+        );
+    }
+
     $inspect(formData);
 </script>
 
@@ -88,8 +100,12 @@
                 errors={validationErrors}
                 bind:formData
                 ready={() => {
-                    ready = true;
-                    console.log("ready!");
+                    // this ensures that any pending updates to state that fire on the same tick as this are resolved.
+                    // if i dont do this, then spurious changes will be sent to the server
+                    tick().then(() => {
+                        ready = true;
+                        console.log("ready!");
+                    });
                 }}
             />
         </div>
@@ -111,6 +127,7 @@
         </span>
         <span class="input-border rounded-xs flex w-fit gap-1">
             <button
+                onclick={publish}
                 class="px-2 py-1 bg-neutral-700 hover:bg-neutral-600 transition-all"
             >
                 Publish

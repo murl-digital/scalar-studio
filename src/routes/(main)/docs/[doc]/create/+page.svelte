@@ -3,13 +3,22 @@
     import { apiFetch } from "$lib/api";
     import { goto, invalidateAll } from "$app/navigation";
     import { page } from "$app/state";
-    import { untrack } from "svelte";
+    import { tick, untrack } from "svelte";
     import { base } from "$app/paths";
     import { nanoid } from "nanoid";
+    import type { EditorField } from "scalar-types";
 
     const { data } = $props();
 
-    let formData = $state({});
+    function init(fields: EditorField[]): {} {
+        let result = {};
+        for (let field of fields) {
+            result[field.name] = null;
+        }
+        return result;
+    }
+
+    let formData = $state(init(data.schema.fields));
     let ready = $state(false);
     let timeout: number | undefined = $state();
 
@@ -26,6 +35,7 @@
         };
 
         if (untrack(() => ready)) {
+            console.log("first change detected!");
             timeout = setTimeout(() => {
                 create(init).then((id) =>
                     goto(`./${id}/edit`, {
@@ -60,8 +70,12 @@
                 errors={[]}
                 bind:formData
                 ready={() => {
-                    ready = true;
-                    console.log("ready!");
+                    // this ensures that any pending updates to state that fire on the same tick as this are resolved.
+                    // if i dont do this, then spurious changes will be sent to the server
+                    tick().then(() => {
+                        ready = true;
+                        console.log("ready!");
+                    });
                 }}
             ></Form>
         </div>

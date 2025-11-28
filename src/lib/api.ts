@@ -39,6 +39,10 @@ export async function apiFetch(
     patched_init.headers.append("Authorization", `Bearer ${token}`);
   } else if (patched_init.headers) {
     patched_init.headers["Authorization"] = `Bearer ${token}`;
+  } else {
+    patched_init.headers = {
+      Authorization: `Bearer ${token}`,
+    };
   }
 
   let response = await fetch(input, patched_init);

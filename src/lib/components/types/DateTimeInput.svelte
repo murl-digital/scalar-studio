@@ -35,6 +35,7 @@
         field.field_type.type == "date" ? "day" : "minute";
 
     let value: DateValue | undefined = $state();
+    $inspect(value);
 
     // "drac why don't you put this into the initial state????"
     // because it explodes. i don't know why. it just does.
@@ -56,6 +57,8 @@
                     .toAbsoluteString()
                     .split("T", 1)[0];
             }
+        } else {
+            data = null;
         }
     };
 

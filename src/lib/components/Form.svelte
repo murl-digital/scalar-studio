@@ -3,6 +3,7 @@
     import { SvelteSet } from "svelte/reactivity";
     import Field from "./Field.svelte";
     import type { Errors } from "$lib/types";
+    import { onMount } from "svelte";
 
     let ready_ids = $state(new SvelteSet());
 
