@@ -1,5 +1,5 @@
-import type { Schema } from "$ts/Schema";
-import type { Item } from "$ts/Item";
+import type { Schema } from "scalar-types";
+import type { Item } from "scalar-types";
 import type { PageLoad } from "./$types";
 import { apiFetch } from "$lib/api";
 import { base } from "$app/paths";

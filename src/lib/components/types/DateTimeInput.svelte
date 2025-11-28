@@ -112,6 +112,7 @@
 </script>
 
 <Label {field}>
+    {/* @ts-ignore: the component handles undefined just fine, sooooo */ null}
     <DatePicker.Root {granularity} bind:value={getValue, setValue}>
         <DatePicker.Input class="flex input-base w-fit p-2 gap-1">
             {#snippet children({ segments })}
@@ -193,6 +194,7 @@
                                     </div>
 
                                     {#if field.field_type.type == "date-time"}
+                                        {/* @ts-ignore: timevalues are handled fine and so is undefined. */ null}
                                         <TimeField.Root
                                             bind:value={getValue, setValue}
                                             granularity="minute"

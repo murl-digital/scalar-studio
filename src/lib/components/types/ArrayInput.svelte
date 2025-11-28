@@ -56,6 +56,7 @@
     <ol class="flex flex-col gap-2">
         {#each internalArray as elem, i (elem.id)}
             <li animate:flip={{ duration: 125 }}>
+                {/* @ts-ignore: classes are fine here. shut up. */ null}
                 <SortableItem
                     propItemNumber={i}
                     bind:propHoveredItemNumber={currentHovered}
