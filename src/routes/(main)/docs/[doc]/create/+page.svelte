@@ -10,8 +10,8 @@
 
     const { data } = $props();
 
-    function init(fields: EditorField[]): {} {
-        let result = {};
+    function init(fields: EditorField[]): { [key: string]: any } {
+        let result: { [key: string]: any } = {};
         for (let field of fields) {
             result[field.name] = null;
         }
