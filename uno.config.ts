@@ -32,13 +32,13 @@ export default defineConfig({
     "border-active": ["ring-purple"],
     "input-border": [
       "border-base",
-      "hover:border-active",
-      "focus-visible:border-active",
+      "hover:ring-purple",
+      "focus-visible:ring-purple",
     ],
     "input-button": [
       "input-base",
       "hover:bg-neutral-600",
-      "focus-visible:border-active",
+      "focus-visible:ring-purple",
       "m-2",
       "px-2",
       "py-1",
