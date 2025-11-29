@@ -1,6 +1,7 @@
 import { sveltekit } from "@sveltejs/kit/vite";
 import { transformerDirectives } from "unocss";
-import UnoCSS from "@unocss/svelte-scoped/vite";
+import extractorSvelte from "@unocss/extractor-svelte";
+import UnoCSS from "unocss/vite";
 import { defineConfig } from "vite";
 
 export default defineConfig({
@@ -14,7 +15,8 @@ export default defineConfig({
   },
   plugins: [
     UnoCSS({
-      cssFileTransformers: [transformerDirectives()],
+      extractors: [extractorSvelte()],
+      transformCSS: true,
     }),
     sveltekit(),
   ],

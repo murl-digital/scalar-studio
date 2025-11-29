@@ -2,6 +2,7 @@
     import "@unocss/reset/tailwind-v4.css";
     import "$lib/css/base.css";
     import "$lib/css/splash.css";
+    import "uno.css";
 
     let { children } = $props();
 
