@@ -1,5 +1,5 @@
 :root {
-    @apply text-gray font-sans;
+    @apply text-gray font-sans bg-dark;
 }
 
 input[type="number"]::-webkit-inner-spin-button,
