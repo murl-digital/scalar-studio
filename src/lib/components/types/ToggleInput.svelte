@@ -25,7 +25,7 @@
         field_type: field.field_type.value,
     };
 
-    let checked = $state(data == null);
+    let checked = $state(data == undefined || data == null);
 
     $effect(() => {
         if (!checked) {
