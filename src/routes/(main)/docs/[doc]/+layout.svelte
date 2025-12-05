@@ -29,13 +29,21 @@
             </a>
             <ul class="flex flex-col pl-0 my-0 w-fit gap-1">
                 {#each data.docs as doc, index}
-                    {@const name = doc.content[Object.keys(doc.content)[0]]}
+                    {@const label = data.schema.label
+                        ? doc.content[data.schema.label]
+                        : doc.content[Object.keys(doc.content)[0]]}
+                    {@const subLabel = data.schema.sub_label
+                        ? doc.content[data.schema.sub_label]
+                        : undefined}
                     <a
                         class="text-gray p-1 hover:border no-underline flex flex-row items-center gap-2"
                         href="/docs/{page.params.doc}/{doc.__sc_id}/edit"
                         ><div class="i-ph-file-text size-4"></div>
-                        {name}</a
-                    >
+                        {label}
+                        {#if subLabel}
+                            {subLabel}
+                        {/if}
+                    </a>
                 {/each}
             </ul>
         </div>
