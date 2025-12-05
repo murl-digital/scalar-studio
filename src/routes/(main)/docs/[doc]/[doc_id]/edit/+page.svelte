@@ -13,7 +13,7 @@
 
     const { data }: { data: PageData } = $props();
 
-    let formData = $state(data.doc);
+    let formData = $derived(data.doc);
 
     let updatingPromise = $state();
     let ready = $state(false);

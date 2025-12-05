@@ -15,9 +15,30 @@
         ready,
     }: { field: EditorField; data: any[]; ready: () => void } = $props();
 
-    if (data == null) {
-        data = [];
-    }
+    let meta: Promise<ComponentMeta | null> = $derived(
+        field.field_type.type === "array"
+            ? getComponent(field.field_type.of)
+            : error(
+                  500,
+                  `invalid field type ${field.field_type.type}, expected array`,
+              ),
+    );
+
+    let of: EditorField = $derived(
+        field.field_type.type === "array"
+            ? {
+                  name: "",
+                  title: "",
+                  required: true,
+                  placeholder: null,
+                  validator: null,
+                  field_type: field.field_type.of,
+              }
+            : error(
+                  500,
+                  `invalid field type ${field.field_type.type}, expected array`,
+              ),
+    );
 
     let internalArray = $state(
         data.map((v, i) => {
@@ -27,25 +48,11 @@
     let currentHovered = $state(-1);
 
     $effect(() => {
+        if (data == null) {
+            data = [];
+        }
         data = internalArray.map((v) => v.v);
     });
-
-    if (field.field_type.type != "array") {
-        error(500, "invalid field type");
-    }
-
-    let meta: Promise<ComponentMeta | null> = $derived(
-        getComponent(field.field_type.of),
-    );
-
-    let of: EditorField = {
-        name: "",
-        title: "",
-        required: true,
-        placeholder: null,
-        validator: null,
-        field_type: field.field_type.of,
-    };
 
     onMount(() => {
         ready();

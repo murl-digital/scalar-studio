@@ -17,15 +17,13 @@
 
     let isAlpha = $derived(
         field.field_type.type === "struct" &&
-            field.field_type.fields.some((f) => f.name === "a"),
+            field.field_type.component_key === "color-input"
+            ? field.field_type.fields.some((f) => f.name === "a")
+            : error(
+                  500,
+                  `ColorInput got bad input. expected (struct, color-input), got (${field.field_type.type}, ${field.field_type.component_key})`,
+              ),
     );
-
-    if (
-        field.field_type.type !== "struct" ||
-        field.field_type.component_key !== "color-input"
-    ) {
-        error(500, "ColorInput was not given a color field");
-    }
 
     const convert = (object: {
         r: number;
@@ -41,12 +39,18 @@
         };
     };
 
-    let rgba = $state(
-        data
-            ? colord(convert(data)).toRgb()
-            : field?.field_type?.default
-              ? colord(convert(field.field_type.default)).toRgb()
-              : null,
+    let rgba = $derived(
+        field.field_type.type === "struct" &&
+            field.field_type.component_key === "color-input"
+            ? data
+                ? colord(convert(data)).toRgb()
+                : field?.field_type?.default
+                  ? colord(convert(field.field_type.default)).toRgb()
+                  : null
+            : error(
+                  500,
+                  `ColorInput got bad input. expected (struct, color-input), got (${field.field_type.type}, ${field.field_type.component_key})`,
+              ),
     );
 
     $effect(() => {

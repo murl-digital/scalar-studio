@@ -15,32 +15,35 @@
 
     let innerReady = $state(false);
 
-    if (
-        field.field_type.type !== "struct" ||
-        field.field_type.component_key !== "file"
-    ) {
-        error(500, "FileInput was not given a file field");
-    }
-
-    let additionalData = field.field_type.fields.find(
-        (elem) => elem.name === "additional_data",
+    let additionalData = $derived(
+        field.field_type.type === "struct" &&
+            field.field_type.component_key === "file"
+            ? (field.field_type.fields.find(
+                  (elem) => elem.name === "additional_data",
+              ) ??
+                  error(
+                      500,
+                      "FieldInput was not given an additional_data field",
+                  ))
+            : error(
+                  500,
+                  `FileInput got an unexpected field type. expected file, got ${field.field_type.type}: ${field.field_type.component_key}`,
+              ),
     );
 
-    if (!additionalData) {
-        error(500, "FieldInput was not given an additional_data field");
-    }
+    $effect(() => {
+        if (!data) {
+            data = {
+                url: null,
+                additional_data: [],
+            };
+        }
 
-    if (!data) {
-        data = {
-            url: null,
-            additional_data: [],
-        };
-    }
-
-    if (additionalData.field_type.type === "null") {
-        data["additional_data"] = [];
-        innerReady = true;
-    }
+        if (additionalData.field_type.type === "null") {
+            data["additional_data"] = [];
+            innerReady = true;
+        }
+    });
 
     $effect(() => {
         if (innerReady) {

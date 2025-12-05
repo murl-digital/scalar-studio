@@ -12,28 +12,30 @@
         ready,
     }: { field: EditorField; data: any; ready: () => void } = $props();
 
-    if (field.field_type.type !== "enum") {
-        error(500, "EnumDropdown was given a field that was not an enum");
-    }
-
-    if (!data) {
-        if (field.field_type.default) {
-            data = field.field_type.default;
-        } else {
-            data = {
-                type: "",
-            };
-        }
-    }
-
     let struct_fields = $derived(
-        field.field_type.variants.filter(
-            (i) => i.variant_name === data?.type,
-        )[0]?.fields ?? [],
+        field.field_type.type === "enum"
+            ? (field.field_type.variants.filter(
+                  (i) => i.variant_name === data?.type,
+              )[0]?.fields ?? [])
+            : error(500, "EnumDropdown was given a field that was not an enum"),
     );
 
     // this ensures that the object always has accurate data
     $effect(() => {
+        if (field.field_type.type !== "enum") {
+            error(500, "EnumDropdown was given a field that was not an enum");
+        }
+
+        if (!data) {
+            if (field.field_type.default) {
+                data = field.field_type.default;
+            } else {
+                data = {
+                    type: "",
+                };
+            }
+        }
+
         Object.keys(data)
             .filter((key) => key !== "type")
             .forEach((key) => {

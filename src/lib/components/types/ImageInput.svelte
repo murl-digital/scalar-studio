@@ -18,23 +18,33 @@
 
     let innerReady = $state(false);
 
-    if (
-        field.field_type.type !== "struct" ||
-        (field.field_type.component_key !== "image" &&
-            field.field_type.component_key !== "cropped-image")
-    ) {
-        error(500, "ImageInput was not given an image field");
-    }
-
-    let isCropped = field.field_type.component_key === "cropped-image";
-
-    let additionalData = field.field_type.fields.find(
-        (elem) => elem.name === "additional_data",
+    let isCropped = $derived(
+        field.field_type.type === "struct" &&
+            (field.field_type.component_key === "image" ||
+                field.field_type.component_key === "cropped-image")
+            ? field.field_type.component_key === "cropped-image"
+            : error(
+                  500,
+                  `ImageInput got an unexpected field type. expected one of image or cropped-image, got ${field.field_type.type}`,
+              ),
     );
 
-    if (!additionalData) {
-        error(500, "ImageInput was not given an additional_data field");
-    }
+    let additionalData = $derived(
+        field.field_type.type === "struct" &&
+            (field.field_type.component_key === "image" ||
+                field.field_type.component_key === "cropped-image")
+            ? (field.field_type.fields.find(
+                  (elem) => elem.name === "additional_data",
+              ) ??
+                  error(
+                      500,
+                      "ImageInput was not given an additional_data field",
+                  ))
+            : error(
+                  500,
+                  `ImageInput got an unexpected field type. expected one of image or cropped-image, got ${field.field_type.type}: ${field.field_type.component_key}`,
+              ),
+    );
 
     if (!data) {
         data = {
@@ -43,10 +53,12 @@
         };
     }
 
-    if (additionalData.field_type.type === "null") {
-        data["additional_data"] = [];
-        innerReady = true;
-    }
+    $effect(() => {
+        if (additionalData.field_type.type === "null") {
+            data["additional_data"] = [];
+            innerReady = true;
+        }
+    });
 
     $effect(() => {
         if (innerReady) {

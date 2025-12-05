@@ -12,18 +12,20 @@
         ready,
     }: { field: EditorField; data: any; ready: () => void } = $props();
 
-    if (field.field_type.type != "toggle") {
-        error(500, "invalid field type");
-    }
-
-    let inner: EditorField = {
+    let inner: EditorField = $derived({
         name: "",
         title: "",
         required: true,
         placeholder: null,
         validator: null,
-        field_type: field.field_type.value,
-    };
+        field_type:
+            field.field_type.type == "toggle"
+                ? field.field_type.value
+                : error(
+                      500,
+                      `invalid field type ${field.field_type.type}, expected "toggle"`,
+                  ),
+    });
 
     let checked = $state(!(data == undefined || data == null));
 

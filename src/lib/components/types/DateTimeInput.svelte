@@ -24,26 +24,21 @@
         ready,
     }: { field: EditorField; data: any; ready: () => void } = $props();
 
-    if (
-        field.field_type.type != "date" &&
-        field.field_type.type != "date-time"
-    ) {
-        error(500, "invalid type");
-    }
-
-    let granularity: "day" | "minute" =
-        field.field_type.type == "date" ? "day" : "minute";
+    let granularity: "day" | "minute" = $derived.by(() => {
+        if (field.field_type.type === "date") {
+            return "day";
+        } else if (field.field_type.type === "date-time") {
+            return "minute";
+        } else {
+            error(
+                500,
+                `DateTimeInput was given an incorrect field type: expected date or date-time, got ${field.field_type.type}`,
+            );
+        }
+    });
 
     let value: DateValue | undefined = $state();
     $inspect(value);
-
-    // "drac why don't you put this into the initial state????"
-    // because it explodes. i don't know why. it just does.
-    if (data && field.field_type.type == "date") {
-        value = parseDate(data);
-    } else if (data && field.field_type.type == "date-time") {
-        value = toCalendarDateTime(parseAbsoluteToLocal(data));
-    }
 
     const getValue = () => value;
     const setValue = (newValue: DateValue) => {
@@ -62,51 +57,14 @@
         }
     };
 
-    // const {
-    //     elements: {
-    //         calendar,
-    //         cell,
-    //         content,
-    //         field: ui_field,
-    //         grid,
-    //         heading,
-    //         label,
-    //         nextButton,
-    //         prevButton,
-    //         segment,
-    //         trigger,
-    //     },
-    //     states: {
-    //         months,
-    //         headingValue,
-    //         weekdays,
-    //         segmentContents,
-    //         value,
-    //         open,
-    //     },
-    //     helpers: { isDateDisabled, isDateUnavailable },
-    // } = createDatePicker({
-    //     //defaultPlaceholder: toCalendarDateTime(now(getLocalTimeZone())),
-    //     defaultValue: initial,
-    //     granularity: field.field_type.type == "date" ? "day" : "second",
-    //     forceVisible: true,
-    // });
-
-    // $effect(() => {
-    //     if ($value) {
-    //         console.log(field.field_type.type);
-    //         if (field.field_type.type == "date-time") {
-    //             data = toZoned($value, getLocalTimeZone()).toAbsoluteString();
-    //         }
-    //         if (field.field_type.type == "date") {
-    //             data = toZoned($value, getLocalTimeZone())
-    //                 .toAbsoluteString()
-    //                 .split("T", 1)[0];
-    //         }
-    //     }
-    // });
-
     onMount(() => {
+        // "drac why don't you put this into the initial state????"
+        // because it explodes. i don't know why. it just does.
+        if (data && field.field_type.type == "date") {
+            value = parseDate(data);
+        } else if (data && field.field_type.type == "date-time") {
+            value = toCalendarDateTime(parseAbsoluteToLocal(data));
+        }
         ready();
     });
 </script>

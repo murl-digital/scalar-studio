@@ -21,23 +21,24 @@
 
     $inspect(errors);
 
-    if (field.field_type.type !== "struct") {
-        error(500, "StructInput was not given an image field");
-    }
-
-    if (!data) {
-        data = {};
-        for (let iField of field.field_type.fields) {
-            data[iField.name];
-        }
-    }
-
     $effect(() => {
         if (
             field.field_type.type === "struct" &&
             ready_ids.size === field.field_type.fields.length
         ) {
             ready();
+        } else {
+            error(
+                500,
+                `StructInput got an unexpected type. expected struct, got ${field.field_type.type}`,
+            );
+        }
+
+        if (!data) {
+            data = {};
+            for (let iField of field.field_type.fields) {
+                data[iField.name];
+            }
         }
     });
 </script>
