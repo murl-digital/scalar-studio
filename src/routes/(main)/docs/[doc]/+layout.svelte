@@ -17,25 +17,26 @@
 
 <div class="flex flex-row h-full w-full">
     {#if !data.schema.singleton}
-        <div class="b-r-solid b-r-1 p-3 pr-6 h-full">
-            <ul class="flex flex-col pl-0 my-0">
+        <div
+            class="b-r-solid b-r-1 overflow-y-scroll px-3 pr-6 h-full min-w-min"
+        >
+            <a
+                class="sticky top-0 bg-dark p-1 hover:border text-gray no-underline flex flex-row items-center gap-2 z-20"
+                href="/docs/{page.params.doc}/create"
+            >
+                <div class="i-ph-plus"></div>
+                Create New
+            </a>
+            <ul class="flex flex-col pl-0 my-0 w-fit gap-1">
                 {#each data.docs as doc, index}
                     {@const name = doc.content[Object.keys(doc.content)[0]]}
                     <a
-                        class="text-gray no-underline flex flex-row items-center gap-2"
+                        class="text-gray p-1 hover:border no-underline flex flex-row items-center gap-2"
                         href="/docs/{page.params.doc}/{doc.__sc_id}/edit"
-                        ><div class="i-ph-file-text"></div>
-                        {name}
-                        {index}</a
+                        ><div class="i-ph-file-text size-4"></div>
+                        {name}</a
                     >
                 {/each}
-                <a
-                    class="text-gray no-underline flex flex-row items-center gap-2"
-                    href="/docs/{page.params.doc}/create"
-                >
-                    <div class="i-ph-plus"></div>
-                    Create New
-                </a>
             </ul>
         </div>
     {/if}

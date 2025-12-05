@@ -12,12 +12,8 @@
         ready,
     }: { field: EditorField; data: any; ready: () => void } = $props();
 
-    let internalText = $state(data ?? "");
-
     $effect(() => {
-        if (internalText) {
-            data = internalText;
-        } else if (data) {
+        if (data.length == 0) {
             data = null;
         }
     });
@@ -32,7 +28,7 @@
 </script>
 
 <Label {field}>
-    <MarkdownEditor theme="scalar" {carta} bind:value={internalText} />
+    <MarkdownEditor theme="scalar" {carta} bind:value={data} />
 </Label>
 
 <style>
