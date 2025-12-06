@@ -3,7 +3,7 @@
     import { Carta, MarkdownEditor } from "carta-md";
     import DOMPurify from "isomorphic-dompurify";
     import "$lib/css/carta-theme-scalar.css";
-    import { onMount } from "svelte";
+    import { onMount, untrack } from "svelte";
     import Label from "../Label.svelte";
 
     let {
@@ -12,11 +12,17 @@
         ready,
     }: { field: EditorField; data: any; ready: () => void } = $props();
 
-    let inner = $derived(data ?? "");
+    let inner = $state(data ?? "");
 
     $effect(() => {
         if (inner.length == 0) {
-            data = null;
+            untrack(() => {
+                data = null;
+            });
+        } else {
+            untrack(() => {
+                data = inner;
+            });
         }
     });
 

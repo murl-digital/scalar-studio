@@ -53,23 +53,6 @@
               ),
     );
 
-    $effect(() => {
-        if (rgba) {
-            data = isAlpha
-                ? {
-                      r: Math.floor(rgba.r),
-                      g: Math.floor(rgba.g),
-                      b: Math.floor(rgba.b),
-                      a: Math.floor(255 * rgba.a),
-                  }
-                : {
-                      r: Math.floor(rgba.r),
-                      g: Math.floor(rgba.g),
-                      b: Math.floor(rgba.b),
-                  };
-        }
-    });
-
     onMount(() => {
         ready();
     });
@@ -83,6 +66,24 @@
             wrapper: Wrapper,
             pickerIndicator: PickerIndicator,
             textInput: TextInput,
+        }}
+        onInput={({ rgb }) => {
+            if (rgb) {
+                data = isAlpha
+                    ? {
+                          r: Math.floor(rgb.r),
+                          g: Math.floor(rgb.g),
+                          b: Math.floor(rgb.b),
+                          a: Math.floor(255 * rgb.a),
+                      }
+                    : {
+                          r: Math.floor(rgb.r),
+                          g: Math.floor(rgb.g),
+                          b: Math.floor(rgb.b),
+                      };
+            } else {
+                data = null;
+            }
         }}
         sliderDirection="vertical"
         isDialog={false}

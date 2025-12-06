@@ -18,7 +18,7 @@
         return result;
     }
 
-    let formData = $derived(init(data.schema.fields));
+    let formData = $state(init(data.schema.fields));
     let ready = $state(false);
     let timeout: number | undefined = $state();
 

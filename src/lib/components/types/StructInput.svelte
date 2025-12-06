@@ -4,6 +4,7 @@
     import Field from "../Field.svelte";
     import { SvelteSet } from "svelte/reactivity";
     import Label from "../Label.svelte";
+    import { onMount } from "svelte";
 
     let {
         field,
@@ -21,6 +22,22 @@
 
     $inspect(errors);
 
+    if (field.field_type.type === "struct") {
+        console.log(data);
+        if (!data) {
+            data = {};
+            for (let iField of field.field_type.fields) {
+                console.log("setting field", iField.name);
+                data[iField.name] = null;
+            }
+        }
+    } else {
+        error(
+            500,
+            `StructInput got an unexpected type. expected struct, got ${field.field_type.type}`,
+        );
+    }
+
     $effect(() => {
         if (field.field_type.type === "struct") {
             if (ready_ids.size === field.field_type.fields.length) {
@@ -31,13 +48,6 @@
                 500,
                 `StructInput got an unexpected type. expected struct, got ${field.field_type.type}`,
             );
-        }
-
-        if (!data) {
-            data = {};
-            for (let iField of field.field_type.fields) {
-                data[iField.name];
-            }
         }
     });
 </script>

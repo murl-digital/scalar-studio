@@ -20,20 +20,24 @@
             : error(500, "EnumDropdown was given a field that was not an enum"),
     );
 
+    if (field.field_type.type !== "enum") {
+        error(500, "EnumDropdown was given a field that was not an enum");
+    }
+
+    if (!data) {
+        if (field.field_type.default) {
+            data = field.field_type.default;
+        } else {
+            data = {
+                type: "",
+            };
+        }
+    }
+
     // this ensures that the object always has accurate data
     $effect(() => {
         if (field.field_type.type !== "enum") {
             error(500, "EnumDropdown was given a field that was not an enum");
-        }
-
-        if (!data) {
-            if (field.field_type.default) {
-                data = field.field_type.default;
-            } else {
-                data = {
-                    type: "",
-                };
-            }
         }
 
         Object.keys(data)

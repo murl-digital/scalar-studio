@@ -47,14 +47,16 @@
     );
     let currentHovered = $state(-1);
 
+    $inspect(internalArray);
+
     $effect(() => {
-        if (data == null) {
-            data = [];
-        }
         data = internalArray.map((v) => v.v);
     });
 
     onMount(() => {
+        if (data == null) {
+            data = [];
+        }
         ready();
     });
 </script>

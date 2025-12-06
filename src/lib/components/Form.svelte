@@ -21,13 +21,13 @@
 
     $inspect(ready_ids);
 
-    $effect(() => {
-        for (let field of fields) {
-            if (formData[field.name] === undefined) {
-                formData[field.name] = null;
-            }
+    for (let field of fields) {
+        if (formData[field.name] === undefined) {
+            formData[field.name] = null;
         }
+    }
 
+    $effect(() => {
         if (ready_ids.size == fields.length) {
             ready();
         }
