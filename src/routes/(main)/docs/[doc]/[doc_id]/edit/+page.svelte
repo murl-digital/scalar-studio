@@ -1,6 +1,6 @@
 <script lang="ts">
     import { apiFetch } from "$lib/api";
-    import { tick, untrack } from "svelte";
+    import { createContext, getContext, tick, untrack } from "svelte";
     import type { PageData } from "./$types";
     import { wait } from "$lib/utils";
     import { fly, slide } from "svelte/transition";
@@ -10,6 +10,8 @@
     import DateTimeInput from "$lib/components/types/DateTimeInput.svelte";
     import type { Errors } from "$lib/types";
     import { Popover } from "bits-ui";
+    import { invalidate } from "$app/navigation";
+    import type { Item } from "scalar-types";
 
     const { data }: { data: PageData } = $props();
 
@@ -20,6 +22,7 @@
     let valid = $state(false);
     let validationErrors: Errors = $state([]);
     let timeout: number | undefined = $state();
+    const docs: () => Item[] = getContext("docs");
 
     $effect.pre(() => {
         ready = false;
@@ -42,6 +45,9 @@
 
         if (untrack(() => ready)) {
             timeout = setTimeout(() => {
+                docs()[
+                    docs().findIndex((d) => d.__sc_id === page.params.doc_id)
+                ].content = formData;
                 updatingPromise = apiFetch(
                     fetch,
                     `${base}/api/docs/${page.params.doc}/drafts/${page.params.doc_id}`,

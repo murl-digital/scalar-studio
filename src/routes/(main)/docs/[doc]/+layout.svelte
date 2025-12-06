@@ -1,8 +1,12 @@
 <script lang="ts">
     import { page } from "$app/state";
     import { goto } from "$app/navigation";
+    import { createContext, setContext } from "svelte";
 
     const { data, children } = $props();
+
+    const docs = $state(data.docs);
+    setContext("docs", () => docs);
 
     $effect(() => {
         if (data.schema.singleton) {
@@ -28,7 +32,7 @@
                 Create New
             </a>
             <ul class="flex flex-col pl-0 my-0 w-fit gap-1">
-                {#each data.docs as doc, index}
+                {#each docs as doc, index}
                     {@const label = data.schema.label
                         ? doc.content[data.schema.label]
                         : doc.content[Object.keys(doc.content)[0]]}
@@ -36,13 +40,17 @@
                         ? doc.content[data.schema.sub_label]
                         : undefined}
                     <a
-                        class="text-gray p-1 hover:border no-underline flex flex-row items-center gap-2"
+                        class="text-gray text-nowrap p-1 hover:border no-underline flex flex-row items-center gap-2"
                         href="/docs/{page.params.doc}/{doc.__sc_id}/edit"
-                        ><div class="i-ph-file-text size-4"></div>
-                        {label}
-                        {#if subLabel}
-                            {subLabel}
-                        {/if}
+                        ><div class="i-ph-file-text size-8"></div>
+                        <div class="flex flex-col">
+                            <span class="text-lg">{label}</span>
+                            {#if subLabel}
+                                <span class="text-md text-gray-500"
+                                    >{subLabel}</span
+                                >
+                            {/if}
+                        </div>
                     </a>
                 {/each}
             </ul>
