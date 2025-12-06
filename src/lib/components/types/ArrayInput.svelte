@@ -15,6 +15,10 @@
         ready,
     }: { field: EditorField; data: any[]; ready: () => void } = $props();
 
+    if (data == null) {
+        data = [];
+    }
+
     let meta: Promise<ComponentMeta | null> = $derived(
         field.field_type.type === "array"
             ? getComponent(field.field_type.of)
@@ -54,9 +58,6 @@
     });
 
     onMount(() => {
-        if (data == null) {
-            data = [];
-        }
         ready();
     });
 </script>
