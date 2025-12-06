@@ -22,11 +22,10 @@
     $inspect(errors);
 
     $effect(() => {
-        if (
-            field.field_type.type === "struct" &&
-            ready_ids.size === field.field_type.fields.length
-        ) {
-            ready();
+        if (field.field_type.type === "struct") {
+            if (ready_ids.size === field.field_type.fields.length) {
+                ready();
+            }
         } else {
             error(
                 500,
