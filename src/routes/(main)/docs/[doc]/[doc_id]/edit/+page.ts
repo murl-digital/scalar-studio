@@ -13,6 +13,7 @@ export const load: PageLoad = async ({ params, fetch }) => {
   let doc: Item = await doc_request.json();
 
   return {
+    isPublished: doc.__sc_published_at != null,
     doc: doc.content,
   };
 };

@@ -28,9 +28,7 @@
         if (field.field_type.default) {
             data = field.field_type.default;
         } else {
-            data = {
-                type: "",
-            };
+            data = null;
         }
     }
 
@@ -40,23 +38,25 @@
             error(500, "EnumDropdown was given a field that was not an enum");
         }
 
-        Object.keys(data)
-            .filter((key) => key !== "type")
-            .forEach((key) => {
-                if (
-                    struct_fields &&
-                    !struct_fields.map((field) => field.name).includes(key)
-                ) {
-                    delete data[key];
-                }
-            });
+        if (data) {
+            Object.keys(data)
+                .filter((key) => key !== "type")
+                .forEach((key) => {
+                    if (
+                        struct_fields &&
+                        !struct_fields.map((field) => field.name).includes(key)
+                    ) {
+                        delete data[key];
+                    }
+                });
 
-        if (struct_fields) {
-            struct_fields.forEach((i_field) => {
-                if (!data[i_field.name]) {
-                    data[i_field.name] = null;
-                }
-            });
+            if (struct_fields) {
+                struct_fields.forEach((i_field) => {
+                    if (!data[i_field.name]) {
+                        data[i_field.name] = null;
+                    }
+                });
+            }
         }
     });
 
@@ -70,10 +70,27 @@
 
 <Label {field}>
     {#if field.field_type.type === "enum"}
-        <Combobox.Root bind:value={data.type} bind:open type="single">
+        <Combobox.Root
+            bind:value={
+                () => data?.type,
+                (value) => {
+                    if (value) {
+                        if (data) {
+                            data.type = value;
+                        } else {
+                            data = { type: value };
+                        }
+                    } else {
+                        data = null;
+                    }
+                }
+            }
+            bind:open
+            type="single"
+        >
             <div class="input-base flex items-center">
                 <Combobox.Input
-                    defaultValue={data.type}
+                    defaultValue={data?.type}
                     onfocus={() => (open = true)}
                     class="w-full p-1 focus:ring-0 focus:outline-none"
                 ></Combobox.Input>

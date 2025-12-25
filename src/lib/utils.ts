@@ -1,4 +1,4 @@
-export function wait(ms: number, value: any) {
+export function wait<T>(ms: number, value: T): Promise<T> {
   return new Promise((resolve) => setTimeout(resolve, ms, value));
 }
 

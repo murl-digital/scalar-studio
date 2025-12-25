@@ -22,7 +22,7 @@
 <div class="flex flex-row h-full w-full">
     {#if !data.schema.singleton}
         <div
-            class="b-r-solid b-r-1 overflow-y-scroll px-3 pr-6 h-full min-w-min"
+            class="b-r-solid b-r-1 overflow-y-scroll px-3 pr-6 h-full max-w-1/6 mt-1"
         >
             <a
                 class="sticky top-0 bg-dark p-1 hover:border text-gray no-underline flex flex-row items-center gap-2 z-20"
@@ -31,7 +31,7 @@
                 <div class="i-ph-plus"></div>
                 Create New
             </a>
-            <ul class="flex flex-col pl-0 my-0 w-fit gap-1">
+            <ul class="flex flex-col pl-0 my-0 gap-1">
                 {#each docs as doc, index}
                     {@const label = data.schema.label
                         ? doc.content[data.schema.label]
@@ -42,9 +42,9 @@
                     <a
                         class="text-gray text-nowrap p-1 hover:border no-underline flex flex-row items-center gap-2"
                         href="/docs/{page.params.doc}/{doc.__sc_id}/edit"
-                        ><div class="i-ph-file-text size-8"></div>
-                        <div class="flex flex-col">
-                            <span class="text-lg">{label}</span>
+                        ><div class="i-ph-file-text size-8 shrink-0"></div>
+                        <div class="flex flex-col overflow-hidden">
+                            <span class="text-lg truncate">{label}</span>
                             {#if subLabel}
                                 <span class="text-md text-gray-500"
                                     >{subLabel}</span

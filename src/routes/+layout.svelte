@@ -3,6 +3,7 @@
     import "$lib/css/base.css";
     import "$lib/css/splash.css";
     import "uno.css";
+    import { Toaster } from "svelte-sonner";
 
     let { children } = $props();
 
@@ -16,3 +17,10 @@
 </script>
 
 {@render children()}
+<Toaster
+    duration={2000}
+    position="top-center"
+    toastOptions={{
+        class: "!bg-zinc-300 !border-purple",
+    }}
+/>

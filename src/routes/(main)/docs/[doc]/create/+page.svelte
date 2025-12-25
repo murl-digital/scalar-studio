@@ -52,7 +52,7 @@
         let id = nanoid();
         await apiFetch(
             fetch,
-            `${base}/api/docs/${page.params.doc}/drafts/${id}`,
+            `${base}/api/docs/${page.params.doc}/${id}/drafts`,
             init,
         );
 

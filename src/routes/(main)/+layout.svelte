@@ -2,6 +2,7 @@
     import { Avatar, DropdownMenu } from "bits-ui";
     import type { PageData } from "./$types";
     import { fly } from "svelte/transition";
+    import { Toaster } from "svelte-sonner";
 
     const { data, children }: { data: PageData; children: any } = $props();
 </script>

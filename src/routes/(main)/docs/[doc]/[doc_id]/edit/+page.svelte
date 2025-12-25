@@ -12,17 +12,27 @@
     import { Popover } from "bits-ui";
     import { invalidate } from "$app/navigation";
     import type { Item } from "scalar-types";
+    import { toast } from "svelte-sonner";
 
     const { data }: { data: PageData } = $props();
 
     let formData = $state(data.doc);
 
-    let updatingPromise = $state();
     let ready = $state(false);
+    let updateAndValidatePromise: Promise<boolean> | undefined = $state();
     let valid = $state(false);
     let validationErrors: Errors = $state([]);
     let timeout: number | undefined = $state();
     const docs: () => Item[] = getContext("docs");
+
+    let label = $derived(
+        data.schema.label
+            ? formData[data.schema.label]
+            : formData[Object.keys(formData)[0]],
+    );
+    let subLabel = $derived(
+        data.schema.sub_label ? formData[data.schema.sub_label] : undefined,
+    );
 
     $effect.pre(() => {
         ready = false;
@@ -48,40 +58,45 @@
                 docs()[
                     docs().findIndex((d) => d.__sc_id === page.params.doc_id)
                 ].content = formData;
-                updatingPromise = apiFetch(
+                updateAndValidatePromise = apiFetch(
                     fetch,
-                    `${base}/api/docs/${page.params.doc}/drafts/${page.params.doc_id}`,
+                    `${base}/api/docs/${page.params.doc}/${page.params.doc_id}/drafts`,
                     init,
-                ).then((value) => wait(1500, value));
-                apiFetch(
-                    fetch,
-                    `${base}/api/docs/${page.params.doc}/validate`,
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify(formData),
-                    },
-                ).then((response) => {
-                    validationErrors = [];
-                    if (response.ok) {
-                        valid = true;
-                    } else {
-                        valid = false;
-                        response.text().then((json) => {
-                            try {
-                                validationErrors = JSON.parse(json);
-                            } catch {
-                                console.log("cant even parse data lmao");
-                                console.log(json);
-                            }
-                        });
-                    }
-                });
+                )
+                    .then(validate)
+                    .then((value) => wait(500, value))
+                    .then((value) => {
+                        valid = value;
+                        return value;
+                    });
+                validate();
             }, 500);
         }
     });
+
+    async function validate() {
+        return apiFetch(fetch, `${base}/api/docs/${page.params.doc}/validate`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
+        }).then((response) => {
+            if (response.ok) {
+                return true;
+            } else {
+                response.text().then((json) => {
+                    try {
+                        validationErrors = JSON.parse(json);
+                    } catch {
+                        console.log("cant even parse data lmao");
+                        console.log(json);
+                    }
+                });
+                return false;
+            }
+        });
+    }
 
     async function publish() {
         await apiFetch(
@@ -90,15 +105,35 @@
             {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData),
+                body: JSON.stringify({
+                    publish_at: publishAt,
+                    doc: formData,
+                }),
             },
         );
+        toast("published!");
+    }
+
+    async function unpublish() {
+        await apiFetch(
+            fetch,
+            `${base}/api/docs/${page.params.doc}/${page.params.doc_id}/publish`,
+            {
+                method: "DELETE",
+            },
+        );
+        toast("unpublished!");
     }
 
     $inspect(formData);
 </script>
 
 <div class="flex flex-col flex-initial w-full h-full">
+    <div class="b-t-solid b-b-2 w-full h-32 flex items-center gap-2 p-2">
+        <h1>{label}</h1>
+        <h2>{subLabel}</h2>
+    </div>
+
     <div class="w-full flex-auto flex justify-center overflow-scroll py-8">
         <div class="max-w-min">
             <Form
@@ -110,6 +145,10 @@
                     // if i dont do this, then spurious changes will be sent to the server
                     tick().then(() => {
                         ready = true;
+                        updateAndValidatePromise = validate().then((value) => {
+                            valid = value;
+                            return value;
+                        });
                         console.log("ready!");
                     });
                 }}
@@ -117,36 +156,41 @@
         </div>
     </div>
 
-    <div class="b-t-solid b-t-2 w-full h-32 flex p-2">
-        {#await updatingPromise}
-            <div
-                transition:slide
-                class="size-8 i-svg-spinners-blocks-wave"
-            ></div>
+    <div class="b-t-solid b-t-2 w-full h-32 flex items-center gap-2 p-2">
+        {#await updateAndValidatePromise}
+            <div class="size-8 i-svg-spinners-blocks-wave"></div>
+        {:then valid}
+            <span class="relative flex size-4">
+                <span
+                    class:bg-green={valid}
+                    class:bg-red={!valid}
+                    class="absolute inline-flex h-full w-full animate-ping rounded-full opacity-75"
+                ></span>
+                <span
+                    class:bg-green={valid}
+                    class:bg-red={!valid}
+                    class="relative inline-flex size-4 rounded-full"
+                ></span>
+            </span>
         {/await}
-        <span>
-            {#if valid}
-                valid!
-            {:else}
-                invalid!
-            {/if}
-        </span>
         <span class="input-border rounded-xs flex w-fit gap-1">
             <button
                 onclick={publish}
-                class="px-2 py-1 bg-neutral-700 hover:bg-neutral-600 transition-all"
+                disabled={!valid}
+                class="px-2 py-1 bg-neutral-700 text-white disabled:text-gray not-disabled:hover:bg-neutral-600 transition-all"
             >
                 Publish
             </button>
             <Popover.Root>
                 <Popover.Trigger
                     aria-label="More publish options"
-                    class="px-1 py-1 bg-neutral-700 hover:bg-neutral-600 transition-all"
+                    disabled={!valid}
+                    class="px-1 py-1 bg-neutral-700 text-white disabled:text-gray not-disabled:hover:bg-neutral-600 transition-all"
                 >
                     <div class="i-ph-caret-up"></div>
                 </Popover.Trigger>
                 <Popover.Portal>
-                    <Popover.Content class="border">
+                    <Popover.Content class="border bg-dark p-2">
                         <Popover.Arrow />
                         <div>
                             <DateTimeInput
@@ -166,10 +210,16 @@
                                 ready={() => {}}
                             ></DateTimeInput>
                         </div>
-                        <Popover.Close>Close</Popover.Close>
+                        <Popover.Close class="input-button">Close</Popover.Close
+                        >
                     </Popover.Content>
                 </Popover.Portal>
             </Popover.Root>
         </span>
+        {#if data.isPublished}
+            <button class="input-button" onclick={unpublish}>
+                Unpublish
+            </button>
+        {/if}
     </div>
 </div>
