@@ -9,6 +9,7 @@
     import Field from "../Field.svelte";
     import { Dialog, Tabs } from "bits-ui";
     import Label from "../Label.svelte";
+    import { untrack } from "svelte";
 
     let {
         field,
@@ -57,6 +58,15 @@
         if (additionalData.field_type.type === "null") {
             data["additional_data"] = [];
             innerReady = true;
+        } else if (
+            untrack(
+                () =>
+                    Array.isArray(data["additional_data"]) &&
+                    data["additional_data"].length == 0,
+            )
+        ) {
+            // even if the additional data is an array, it's fine to set it to null because the field will handle setting it up correctly
+            data["additional_data"] = null;
         }
     });
 
@@ -211,7 +221,7 @@
                             min-w-min -translate-x-1/2 -translate-y-1/2 p-8 bg-dark text-gray border-1 rounded-xs shadow-lg shadow-black transition-all"
                 >
                     <Tabs.Root bind:value={tab}>
-                        <Tabs.List class="flex ">
+                        <Tabs.List class="flex h-1/12">
                             <Tabs.Trigger
                                 value="upload"
                                 class="input-button basis-1/2 grow"
@@ -238,7 +248,7 @@
                         </Tabs.Content>
                         <Tabs.Content
                             value="select"
-                            class="flex-auto overflow-scroll"
+                            class="overflow-scroll h-11/12"
                         >
                             {#await apiFetch(fetch, `${base}/api/images/list`).then( (r) => r.json(), )}
                                 ...
