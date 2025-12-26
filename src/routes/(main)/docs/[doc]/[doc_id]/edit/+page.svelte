@@ -10,7 +10,7 @@
     import DateTimeInput from "$lib/components/types/DateTimeInput.svelte";
     import type { Errors } from "$lib/types";
     import { Popover } from "bits-ui";
-    import { invalidate } from "$app/navigation";
+    import { invalidate, invalidateAll } from "$app/navigation";
     import type { Item } from "scalar-types";
     import { toast } from "svelte-sonner";
 
@@ -85,6 +85,7 @@
             if (response.ok) {
                 return true;
             } else {
+                validationErrors = [];
                 response.text().then((json) => {
                     try {
                         validationErrors = JSON.parse(json);
@@ -111,6 +112,7 @@
                 }),
             },
         );
+        await invalidateAll();
         toast("published!");
     }
 
@@ -122,6 +124,7 @@
                 method: "DELETE",
             },
         );
+        await invalidateAll();
         toast("unpublished!");
     }
 

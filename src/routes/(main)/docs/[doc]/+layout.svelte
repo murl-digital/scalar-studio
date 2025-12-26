@@ -1,7 +1,12 @@
 <script lang="ts">
     import { page } from "$app/state";
-    import { goto } from "$app/navigation";
+    import { goto, invalidateAll } from "$app/navigation";
     import { createContext, setContext } from "svelte";
+    import { AlertDialog } from "bits-ui";
+    import DeleteDialog from "./DeleteDialog.svelte";
+    import { apiFetch } from "$lib/api";
+    import { base } from "$app/paths";
+    import { toast } from "svelte-sonner";
 
     const { data, children } = $props();
 
@@ -33,11 +38,15 @@
             </a>
             <ul class="flex flex-col pl-0 my-0 gap-1">
                 {#each docs as doc, index}
-                    {@const label = data.schema.label
-                        ? doc.content[data.schema.label]
-                        : doc.content[Object.keys(doc.content)[0]]}
-                    {@const subLabel = data.schema.sub_label
-                        ? doc.content[data.schema.sub_label]
+                    {@const label = doc.content
+                        ? data.schema.label
+                            ? doc.content[data.schema.label]
+                            : doc.content[Object.keys(doc.content)[0]]
+                        : ""}
+                    {@const subLabel = doc.content
+                        ? data.schema.sub_label
+                            ? doc.content[data.schema.sub_label]
+                            : undefined
                         : undefined}
                     <a
                         class="text-gray text-nowrap p-1 hover:border no-underline flex flex-row items-center gap-2"
@@ -51,6 +60,22 @@
                                 >
                             {/if}
                         </div>
+                        <DeleteDialog
+                            callback={() => {
+                                apiFetch(
+                                    fetch,
+                                    `${base}/api/docs/${page.params.doc}/${doc.__sc_id}`,
+                                    {
+                                        method: "DELETE",
+                                    },
+                                ).then(async (response) => {
+                                    if (response.ok) {
+                                        await invalidateAll();
+                                        toast("deleted item succesfully!");
+                                    }
+                                });
+                            }}
+                        ></DeleteDialog>
                     </a>
                 {/each}
             </ul>
