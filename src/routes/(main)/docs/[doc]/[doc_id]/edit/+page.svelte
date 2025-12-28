@@ -69,23 +69,26 @@
                         valid = value;
                         return value;
                     });
-                validate();
             }, 500);
         }
     });
 
     async function validate() {
-        return apiFetch(fetch, `${base}/api/docs/${page.params.doc}/validate`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
+        return apiFetch(
+            fetch,
+            `${base}/api/docs/${page.params.doc}/validate?id=${page.params.doc_id}`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(formData),
             },
-            body: JSON.stringify(formData),
-        }).then((response) => {
+        ).then((response) => {
+            validationErrors = [];
             if (response.ok) {
                 return true;
             } else {
-                validationErrors = [];
                 response.text().then((json) => {
                     try {
                         validationErrors = JSON.parse(json);
@@ -139,23 +142,27 @@
 
     <div class="w-full flex-auto flex justify-center overflow-scroll py-8">
         <div class="max-w-min">
-            <Form
-                fields={data.schema.fields}
-                errors={validationErrors}
-                bind:formData
-                ready={() => {
-                    // this ensures that any pending updates to state that fire on the same tick as this are resolved.
-                    // if i dont do this, then spurious changes will be sent to the server
-                    tick().then(() => {
-                        ready = true;
-                        updateAndValidatePromise = validate().then((value) => {
-                            valid = value;
-                            return value;
+            {#key page.params.doc_id}
+                <Form
+                    fields={data.schema.fields}
+                    errors={validationErrors}
+                    bind:formData
+                    ready={() => {
+                        // this ensures that any pending updates to state that fire on the same tick as this are resolved.
+                        // if i dont do this, then spurious changes will be sent to the server
+                        tick().then(() => {
+                            ready = true;
+                            updateAndValidatePromise = validate().then(
+                                (value) => {
+                                    valid = value;
+                                    return value;
+                                },
+                            );
+                            console.log("ready!");
                         });
-                        console.log("ready!");
-                    });
-                }}
-            />
+                    }}
+                />
+            {/key}
         </div>
     </div>
 
